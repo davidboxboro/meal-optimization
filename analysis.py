@@ -104,6 +104,6 @@ if __name__ == '__main__':
         'sodium': [0, 1500],
     }
 
-    D = 2
+    D = 7
     df_opt, cost_opt = optimize(nut_targs, df, D)
     df_opt.to_csv('opt.csv')
