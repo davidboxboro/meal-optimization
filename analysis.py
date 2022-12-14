@@ -46,7 +46,7 @@ def mk_df():
 
 def optimize(nut_bounds, df, T):
     # sample df to make it faster
-    df = df.sample(frac=0.2)
+    df = df.sample(frac=1)
 
     # variables
     I = len(df)
@@ -64,7 +64,7 @@ def optimize(nut_bounds, df, T):
     constraints.append(s <= 3 * x)  # meals can't be more than 3 servings
     constraints.append(s >= 0.5 * x)  # meals can't be less than 0.5 servings
     constraints.append(cp.sum(x, axis=0) == 3)  # 3 meals per day
-    constraints.append(cp.sum(x, axis=1) <= max(1, T * (2 / 7)))  # don't repeat meals too often
+    constraints.append(cp.sum(x, axis=1) <= max(1, T * (1 / 7)))  # don't repeat meals too often
     # macros lower and upper limits
     for t in range(T):
         for nut in nut_bounds:
@@ -75,7 +75,7 @@ def optimize(nut_bounds, df, T):
 
     # solve
     prob = cp.Problem(obj, constraints)
-    cost_opt = prob.solve(solver=cp.GUROBI, verbose=1)
+    cost_opt = prob.solve(solver=cp.GUROBI, verbose=True)
     s_opt = s.value
 
     # stats
@@ -96,13 +96,23 @@ if __name__ == '__main__':
     # read data into DF
     df = mk_df()
 
-    nut_targs = {
-        'calories': 2500,
-        'carbohydrates': 319,
-        'protein': 113,
-        'fat': 92,
-        'fiber': 27.5,
-    }
+    std = True
+    if std:
+        nut_targs = {
+            'calories': 2500,
+            'carbohydrates': 319,
+            'protein': 113,
+            'fat': 92,
+            'fiber': 27.5,
+        }
+    else:
+        nut_targs = {
+            'calories': 2500,
+            'carbohydrates': 250,
+            'protein': 188,
+            'fat': 83,
+            'fiber': 27.5,
+        }
     nut_bounds = {
         'sodium': [0, 2500],
     }
@@ -112,6 +122,7 @@ if __name__ == '__main__':
         nut_bounds[nut] = [lb, ub]
     print(nut_bounds)
 
-    D = 7
+    D = 1
     df_opt, cost_opt = optimize(nut_bounds, df, D)
-    df_opt.to_csv('opt.csv')
+    fn = 'opt_standard.csv' if std else 'opt_protein.csv'
+    df_opt.to_csv(fn)
