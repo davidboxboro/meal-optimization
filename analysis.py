@@ -124,5 +124,5 @@ if __name__ == '__main__':
 
     D = 1
     df_opt, cost_opt = optimize(nut_bounds, df, D)
-    fn = 'opt_standard.csv' if std else 'opt_protein.csv'
+    fn = 'opt.csv'
     df_opt.to_csv(fn)
