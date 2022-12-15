@@ -96,7 +96,7 @@ if __name__ == '__main__':
     # read data into DF
     df = mk_df()
 
-    std = True
+    std = False
     if std:
         nut_targs = {
             'calories': 2500,
@@ -122,7 +122,7 @@ if __name__ == '__main__':
         nut_bounds[nut] = [lb, ub]
     print(nut_bounds)
 
-    D = 1
+    D = 7
     df_opt, cost_opt = optimize(nut_bounds, df, D)
     fn = 'opt.csv'
     df_opt.to_csv(fn)
